@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.JdbcUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "INNER JOIN users u " +
                                 "   on ur.user_id = u.id " +
                                 "INNER JOIN roles r " +
-                                "   on ur.role_id = r.id " +
+                                "   on ur.roles_id = r.id " +
                                 "WHERE u.login = ? AND u.is_active = 1"
                 );
     }
@@ -49,7 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
 
-                .anyRequest().permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/").permitAll()
+
+                .antMatchers(HttpMethod.POST, "/api/profile/**").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/record/**").authenticated()
 
                 .and()
                 .httpBasic();

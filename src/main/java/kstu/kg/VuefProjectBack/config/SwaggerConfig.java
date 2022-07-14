@@ -17,7 +17,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("kg.kstu.VuefProjectBack.controller"))
+                .apis(RequestHandlerSelectors.basePackage("kstu.kg.VuefProjectBack.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(getInfo());
@@ -26,7 +26,7 @@ public class SwaggerConfig {
     private ApiInfo getInfo() {
         return new ApiInfoBuilder()
                 .contact(new Contact("Ulanov Nurdin", "https://github.com/Smile-Bonchichi", "ulanovnurdin@gmail.com"))
-                .description("Киберспортивный портал")
+                .description("Домашняя бухглатерия")
                 .title("Pet проект")
                 .version("v1.0")
                 .build();

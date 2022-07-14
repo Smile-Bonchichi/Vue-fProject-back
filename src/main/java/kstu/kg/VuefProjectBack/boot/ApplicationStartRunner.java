@@ -22,12 +22,12 @@ public class ApplicationStartRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        roleService.saveOrUpdate(Role.builder()
-                .roleName("ROLE_ADMIN")
-                .build());
-
-        roleService.saveOrUpdate(Role.builder()
-                .roleName("ROLE_USER")
-                .build());
+//        roleService.saveOrUpdate(Role.builder()
+//                .roleName("ROLE_ADMIN")
+//                .build());
+//
+//        roleService.saveOrUpdate(Role.builder()
+//                .roleName("ROLE_USER")
+//                .build());
     }
 }

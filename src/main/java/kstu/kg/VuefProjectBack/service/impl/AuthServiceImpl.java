@@ -1,8 +1,9 @@
 package kstu.kg.VuefProjectBack.service.impl;
 
 import kstu.kg.VuefProjectBack.dto.request.UserAuthDtoRequest;
-import kstu.kg.VuefProjectBack.dto.resoinse.UserAuthDtoResponse;
+import kstu.kg.VuefProjectBack.dto.response.UserAuthDtoResponse;
 import kstu.kg.VuefProjectBack.entity.User;
+import kstu.kg.VuefProjectBack.entity.Wallet;
 import kstu.kg.VuefProjectBack.exception.UserNotCorrectPasswordException;
 import kstu.kg.VuefProjectBack.exception.UserNotFoundException;
 import kstu.kg.VuefProjectBack.exception.UserSignUpException;
@@ -10,7 +11,7 @@ import kstu.kg.VuefProjectBack.mapper.UserMapper;
 import kstu.kg.VuefProjectBack.service.AuthService;
 import kstu.kg.VuefProjectBack.service.database.RoleService;
 import kstu.kg.VuefProjectBack.service.database.UserService;
-
+import kstu.kg.VuefProjectBack.service.database.WalletService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.Collections;
 
@@ -31,13 +33,17 @@ public class AuthServiceImpl implements AuthService {
 
     final PasswordEncoder passwordEncoder;
 
+    final WalletService walletService;
+
     @Autowired
     public AuthServiceImpl(UserService userService,
                            RoleService roleService,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           WalletService walletService) {
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.walletService = walletService;
     }
 
     @Override
@@ -55,7 +61,15 @@ public class AuthServiceImpl implements AuthService {
             throw new UserSignUpException("Не удалось создать пользователя", HttpStatus.BAD_REQUEST);
         }
 
-        return getToken(userAuthDtoRequest);
+        walletService.saveOrUpdate(
+                Wallet.builder()
+                        .amount(BigDecimal.ZERO)
+                        .currency("KGS")
+                        .user(user)
+                        .build()
+        );
+
+        return null;
     }
 
     @Override
@@ -67,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (passwordEncoder.matches(userAuthDtoRequest.getPassword(), user.getPassword())) {
-            return getToken(userAuthDtoRequest);
+            return getToken(userAuthDtoRequest, user);
         } else {
             throw new UserNotCorrectPasswordException("Неправильный логин или пароль", HttpStatus.BAD_REQUEST);
         }
@@ -78,11 +92,15 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private UserAuthDtoResponse getToken(UserAuthDtoRequest userAuthDtoRequest) {
+    private UserAuthDtoResponse getToken(UserAuthDtoRequest userAuthDtoRequest, User user) {
+        Wallet wallet = walletService.getByUser(user.getId());
+
         return UserAuthDtoResponse.builder()
                 .token("Basic " + new String(Base64.getEncoder()
                                 .encode((userAuthDtoRequest.getLogin() + ":" + userAuthDtoRequest.getPassword()).getBytes())
                         )
-                ).build();
+                ).amount(wallet.getAmount())
+                .currency(wallet.getCurrency())
+                .build();
     }
 }

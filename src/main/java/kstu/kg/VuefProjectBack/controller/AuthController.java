@@ -3,7 +3,7 @@ package kstu.kg.VuefProjectBack.controller;
 import io.swagger.annotations.ApiOperation;
 
 import kstu.kg.VuefProjectBack.dto.request.UserAuthDtoRequest;
-import kstu.kg.VuefProjectBack.dto.resoinse.UserAuthDtoResponse;
+import kstu.kg.VuefProjectBack.dto.response.UserAuthDtoResponse;
 import kstu.kg.VuefProjectBack.service.AuthService;
 
 import lombok.AccessLevel;
@@ -14,15 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth/")
+@CrossOrigin
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthController {
     final AuthService authService;
